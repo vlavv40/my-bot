@@ -1,0 +1,5 @@
+.cache/
+.android/
+*.log
+*.pyc
+__pycache__/
