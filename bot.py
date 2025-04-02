@@ -1,6 +1,6 @@
 import random
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
 # Список фраз с эмоциональными выражениями и смайликами для парней
 responses_male = [
@@ -28,6 +28,9 @@ responses_female = [
     "Ты одна из лучших! 🌟", "Ты просто чудо, умничка! 😍", "Ты всегда на высоте, красавица! 👑"
 ]
 
+# Хранилище пола пользователя
+user_genders = {}
+
 # Функция для получения приветствия в зависимости от пола
 def get_greeting(user_gender):
     if user_gender == "male":
@@ -37,13 +40,28 @@ def get_greeting(user_gender):
     else:
         return "Привет!"
 
-# Функция обработки команды "/start"
-def start(update: Update, context):
+# Функция для установки пола пользователя
+def set_gender(update: Update, context: CallbackContext):
     user = update.message.from_user
-    gender = user.username  # Для примера использую username, можно запросить пол у пользователя
-    # Тут нужно обрабатывать gender корректно (например, через команду или анкету)
-    greeting = get_greeting(gender)
+    gender = update.message.text.split(' ')[1].lower()  # Ожидаем, что пользователь введет команду вида "/set_gender male" или "/set_gender female"
     
+    if gender not in ['male', 'female']:
+        update.message.reply_text("Пожалуйста, используйте /set_gender male или /set_gender female")
+        return
+    
+    user_genders[user.id] = gender
+    update.message.reply_text(f"Пол успешно установлен: {gender.capitalize()}!")
+
+# Функция обработки команды "/start"
+def start(update: Update, context: CallbackContext):
+    user = update.message.from_user
+    gender = user_genders.get(user.id, None)
+    
+    if gender is None:
+        update.message.reply_text("Пожалуйста, установите ваш пол с помощью команды /set_gender.")
+        return
+    
+    greeting = get_greeting(gender)
     update.message.reply_text(greeting)
 
 # Создание и запуск бота
@@ -53,8 +71,9 @@ def main():
 
     dispatcher = updater.dispatcher
 
-    # Добавляем обработчик команд
+    # Добавляем обработчики команд
     dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(CommandHandler("set_gender", set_gender))
     dispatcher.add_handler(MessageHandler(Filters.text, start))  # Для всех текстовых сообщений
 
     # Запуск бота
