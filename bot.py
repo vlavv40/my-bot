@@ -4,6 +4,7 @@ import random
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import Message
 from aiogram.filters import CommandStart  # Добавляем импорт
+from datetime import datetime, timedelta
 
 # Твой токен бота (замени на свой)
 TOKEN = "8019699528:AAE1LebzllSYMZxoX8X3-oEvrc8xfz9i6zQ"
@@ -66,6 +67,57 @@ async def duplicate_message():
                 logging.error(f"Ошибка дублирования сообщения: {e}")
         await asyncio.sleep(60)  # Проверяем каждую минуту
 
+# Напоминание каждый день в 10:00
+async def daily_reminder():
+    while True:
+        now = datetime.now()
+        target_time = now.replace(hour=10, minute=0, second=0, microsecond=0)
+
+        if now > target_time:
+            target_time += timedelta(days=1)
+
+        time_to_wait = (target_time - now).total_seconds()
+        await asyncio.sleep(time_to_wait)  # Ожидаем до 10:00
+
+        reminder_message = """‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️
+КОНСУЛЬТАЦИЯ - 20 МИН В ДЕНЬ
+ДОЗАПОЛНЕНИЕ - УЧИТЫВАЯ КУРЬЕРА 6 МИН НА ПРИНЯТЫЙ ЛИД
+ОБУЧЕНИЕ - ТОЛЬКО ПО МОЕМУ. НАЗНАЧЕНИЮ
+ЛИЧНЫЙ ПЕРЕРЫВ - 1 ЧАС
+ЗВОНЮ В РУЧ - 15 МИН В ДЕНЬ
+‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️‼️
+
+все перелимиты + 30 минут или штраф 100 грн 📌"""
+        try:
+            await bot.send_message(chat_id="-1001697395203", text=reminder_message)
+            logging.info("Ежедневное напоминание отправлено.")
+        except Exception as e:
+            logging.error(f"Ошибка отправки ежедневного напоминания: {e}")
+
+# Напоминание каждые 2 часа
+async def hourly_reminder():
+    while True:
+        now = datetime.now()
+        target_time = now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=(now.hour // 2 + 1) * 2)
+
+        time_to_wait = (target_time - now).total_seconds()
+        await asyncio.sleep(time_to_wait)  # Ожидаем до следующего напоминания каждые 2 часа
+
+        reminder_message = """🍄 Грибок ( свам экзостоп)
+🍬Диабет (глюколикс)
+🐛Паразиты (гетоксин,токсилид)
+👣Вальгус (Вальготон и прочие)
+🅱️Варикоз (Венсейв Венолид)
+👂Слух (Лорабион)
+🍆Увелечение (Титан Актив)
+
+Вся гуманитарка (sharkfarmfree) и вот эти офферы проекта ФБ (sharkfarm) по старым ценам в к (4 уп) 1990 грн - (6 уп) 2844 грн"""
+        try:
+            await bot.send_message(chat_id="-1001697395203", text=reminder_message)
+            logging.info("Напоминание через 2 часа отправлено.")
+        except Exception as e:
+            logging.error(f"Ошибка отправки напоминания через 2 часа: {e}")
+
 # Обработчик сообщений
 @dp.message()
 async def respond(message: Message):
@@ -81,9 +133,10 @@ async def start_command(message: types.Message):
 # Запуск бота и дублирование сообщений
 async def main():
     asyncio.create_task(duplicate_message())
+    asyncio.create_task(daily_reminder())  # Добавляем задачу для ежедневного напоминания
+    asyncio.create_task(hourly_reminder())  # Добавляем задачу для напоминаний каждые 2 часа
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
     asyncio.run(main())
-
 
