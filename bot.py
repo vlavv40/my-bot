@@ -110,7 +110,7 @@ async def respond(message: Message):
     if re.match(r"\+1(\.5)?(\s*(кур|гум|кросс|ср|\+кур|\+кросс)?)?(\s*[\U0001F300-\U0001F6FF]*)?$", text):
         response = random.choice(responses)
         await message.reply(response)
-        await message.react("❤️")  # Правильное использование реакции
+        await message.react(["❤️"])  # Передаем реакцию как список
     
     elif text.lower() == "спасибо серег":
         response = random.choice(thank_you_responses)
