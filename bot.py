@@ -7,7 +7,7 @@ from aiogram.types import Message
 from aiogram.filters import CommandStart
 
 # Твой токен бота
-TOKEN = "ТВОЙ_ТОКЕН"
+TOKEN = "8019699528:AAE1LebzllSYMZxoX8X3-oEvrc8xfz9i6zQ"
 
 # Включаем логирование
 logging.basicConfig(level=logging.INFO)
