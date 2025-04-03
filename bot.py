@@ -92,7 +92,8 @@ async def respond(message: Message):
         await message.reply(response)
         return
     
-    if re.match(r"\+1(\.5)?(\s*(кур|гум|кросс|ср|\+кур|\+кросс)?)?(\s*[\U0001F300-\U0001F6FF]*)?$", text):
+    # Проверка на сообщения вида +1, +1.5 и т.д.
+    if re.match(r"^\+1(\.5)?(\s*(кур|гум|кросс|ср|\+кур|\+кросс)?)?(\s*[\U0001F300-\U0001F6FF]*)?$", text):
         response = random.choice(responses)
         await message.reply(response)
         await message.react(ReactionTypeEmoji("❤️"))  # Оборачиваем эмодзи в нужный тип
